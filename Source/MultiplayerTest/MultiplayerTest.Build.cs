@@ -8,7 +8,11 @@ public class MultiplayerTest : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{ 
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
+			"OnlineSubsystem", "OnlineSubsystemSteam" // Add this line for Online Subsystem
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
