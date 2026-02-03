@@ -25,11 +25,18 @@ protected:
 	IOnlineSessionPtr SessionInterface;
 
 	// Step 2: Function to handle everything that needs to happen when the game instance is created
+	// Note: virtual just makes it easy to override in the future
 	virtual void Init() override;
+
+	// Step 6: Determine what we do when a session is created
+	// Refer to documentation for IOnlineSession: 
+	// https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Plugins/OnlineSubsystem/IOnlineSession?application_version=5.7
+	// Refer to virtual void TriggerOnCreateSessionCompleteDelegates ( FName Param1, bool Param2 )
+	virtual void OnCreateSessionComplete(FName ServerName, bool IsSuccessful);
 
 	// Step 5: Create our blueprint function for creating/joining a session
 	UFUNCTION(BlueprintCallable) // This just makes our function visible to Blueprints. Neato!
-		static void CreateServer();
+		void CreateServer();
 
 	UFUNCTION(BlueprintCallable)
 		void JoinServer();

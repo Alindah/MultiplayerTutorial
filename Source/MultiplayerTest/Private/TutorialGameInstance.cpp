@@ -8,6 +8,9 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 
+// For Step 6
+#include "Engine/World.h"
+
 // Constructor that we added
 UTutorialGameInstance::UTutorialGameInstance()
 {
@@ -30,8 +33,9 @@ void UTutorialGameInstance::Init()
 
 		if (SessionInterface.IsValid())
 		{
-			// Bind delegates
-			//SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UTutorialGameInstance::CreateSession());
+			// Step 6: Bind delegates. Delegates are essentially events
+			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UTutorialGameInstance::OnCreateSessionComplete);
+
 			//UE_LOG(LogTemp, Warning, TEXT("Online Subsystem found: %s"), *SubSystem->GetSubsystemName().ToString());
 		}
 	}
@@ -41,10 +45,38 @@ void UTutorialGameInstance::Init()
 // Go back to Unreal Editor to attach these functions to the buttons in our main menu
 void UTutorialGameInstance::CreateServer()
 {
-	
+	UE_LOG(LogTemp, Warning, TEXT("Creating server..."));
+
+	FOnlineSessionSettings SessionSettings;
+	SessionSettings.bAllowJoinInProgress = true;
+	SessionSettings.bIsDedicated = false;
+	SessionSettings.bIsLANMatch = true;	// True for testing, false for Steam
+	SessionSettings.bShouldAdvertise = true;
+	SessionSettings.bUsesPresence = true;
+	SessionSettings.NumPublicConnections = 4;
+
+	SessionInterface->CreateSession(0, FName("New Session"), SessionSettings);
 }
 
 void UTutorialGameInstance::JoinServer()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Joining server..."));
+}
 
+// Step 6: What happens when a session is created
+void UTutorialGameInstance::OnCreateSessionComplete(FName ServerName, bool IsSuccessful)
+{
+	// 0 indicates failure, 1 indicates success
+	UE_LOG(LogTemp, Warning, TEXT("OnCreateSessionComplete - success? %d"), IsSuccessful);
+
+	// Server travel if successful
+	if (IsSuccessful)
+	{
+		// Get the level path by right-clicking on a level in Unreal Editor and selecting "Copy Reference"
+		// Remove anything before /Game and anything after the period near the end of the path
+		// Add ?listen to indicate that this is a listen server
+		FString LevelRef = "/Game/_TUTORIALS/OnlineSubsystem/OnlineSubsystemTutorial?listen";
+
+		GetWorld()->ServerTravel(LevelRef);
+	}
 }
